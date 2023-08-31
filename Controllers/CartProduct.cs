@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Iseseisvus_Töö_ORM_Gužov.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class CartProductController : ControllerBase
     {
         //base

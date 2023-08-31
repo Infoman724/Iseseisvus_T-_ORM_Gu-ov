@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Iseseisvus_Töö_ORM_Gužov.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class OrderController : ControllerBase
     {
         //base
@@ -60,18 +60,28 @@ namespace Iseseisvus_Töö_ORM_Gužov.Controllers
         }
         //delete
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
+        public IActionResult DeleteOrder(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = _context.Orders
+                .Include(o => o.CartProducts) // Include the associated CartProducts
+                .FirstOrDefault(o => o.Id == id);
 
             if (order == null)
+            {
                 return NotFound();
+            }
 
+            // Remove associated CartProducts
+            _context.CartProducts.RemoveRange(order.CartProducts);
+
+            // Remove the Order
             _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
+
+            _context.SaveChanges();
 
             return NoContent();
         }
+
         //check
         private bool OrderExists(int id)
         {
